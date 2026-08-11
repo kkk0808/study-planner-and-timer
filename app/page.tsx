@@ -1,47 +1,85 @@
+'use client'
+
+import { useState } from 'react'
+import { StoreProvider } from '@/lib/store'
+import { CalendarView } from '@/components/calendar-view'
+import { TimerView } from '@/components/timer-view'
+import { ReportView } from '@/components/report-view'
+import { cn } from '@/lib/utils'
+
+type Tab = 'calendar' | 'timer' | 'report'
+
+const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'calendar', label: 'カレンダー', icon: '🗓️' },
+  { id: 'timer', label: 'タイマー', icon: '⏰' },
+  { id: 'report', label: 'きろく', icon: '📊' },
+]
+
 export default function Page() {
+  const [tab, setTab] = useState<Tab>('calendar')
+  const [timerSubject, setTimerSubject] = useState<string | null>(null)
+
+  const goTimer = (subjectId: string) => {
+    setTimerSubject(subjectId)
+    setTab('timer')
+  }
+
   return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
-    </main>
+    <StoreProvider>
+      <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col">
+        <header className="px-6 pt-8 pb-4">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">
+            Study Time
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            きょうも こつこつ、いっしょに がんばろう
+          </p>
+        </header>
+
+        <main className="flex-1 px-4 pb-28">
+          {tab === 'calendar' && <CalendarView onOpenTimer={goTimer} />}
+          {tab === 'timer' && (
+            <TimerView
+              initialSubject={timerSubject}
+              onConsumeInitial={() => setTimerSubject(null)}
+            />
+          )}
+          {tab === 'report' && <ReportView />}
+        </main>
+
+        <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-card/85 backdrop-blur-md">
+          <div className="mx-auto flex max-w-2xl items-stretch justify-around px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+            {TABS.map((t) => {
+              const active = tab === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTab(t.id)}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'flex flex-1 flex-col items-center gap-1 rounded-2xl py-2 transition-colors',
+                    active
+                      ? 'bg-primary/12 text-primary'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'text-xl transition-transform',
+                      active && 'scale-110',
+                    )}
+                    aria-hidden
+                  >
+                    {t.icon}
+                  </span>
+                  <span className="text-xs font-medium">{t.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </nav>
+      </div>
+    </StoreProvider>
   )
 }

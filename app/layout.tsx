@@ -1,36 +1,46 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { M_PLUS_Rounded_1c, Quicksand } from 'next/font/google'
 import './globals.css'
 
+const mplusRounded = M_PLUS_Rounded_1c({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700', '800'],
+  variable: '--font-sans',
+  display: 'swap',
+})
+
+const quicksand = Quicksand({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Study Time',
+  description: '自分だけの可愛い勉強スケジュール＆タイマー',
   generator: 'v0.app',
+  manifest: 'manifest.webmanifest',
+  applicationName: 'Study Time',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Study Time',
+  },
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/app-icon.png',
+    apple: '/app-icon.png',
   },
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'light',
+  themeColor: '#faf6f1',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
@@ -39,11 +49,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </body>
+    <html
+      lang="ja"
+      className={`${mplusRounded.variable} ${quicksand.variable} bg-background`}
+    >
+      <body className="font-sans antialiased">{children}</body>
     </html>
   )
 }
